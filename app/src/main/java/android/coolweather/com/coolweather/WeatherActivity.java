@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.coolweather.com.coolweather.gson.Forecast;
 import android.coolweather.com.coolweather.gson.Weather;
 import android.coolweather.com.coolweather.util.HttpUtil;
+import android.coolweather.com.coolweather.util.LogUtil;
 import android.coolweather.com.coolweather.util.Utility;
 import android.graphics.Color;
 import android.os.Build;
@@ -50,6 +51,8 @@ public class WeatherActivity extends AppCompatActivity {
     private ImageView bingPicImg;
 
     public SwipeRefreshLayout swipeRefreshLayout;
+    //用于刷新时记录新的weatherId，否则切换县后，刷新后还是前面的县。
+    private String pWeatherId;
     public DrawerLayout drawerLayout;
     private Button navButton;
 
@@ -117,12 +120,15 @@ public class WeatherActivity extends AppCompatActivity {
         }else{
             loadBingPic();
         }
+        pWeatherId=weatherId;
         //下拉刷新监听器
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout
                 .OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(weatherId);
+                LogUtil.d("WEATHERACTIVITY",weatherId);
+                LogUtil.d("WEATHERACTIVITY",pWeatherId);
+                requestWeather(pWeatherId);
             }
         });
 
@@ -133,6 +139,7 @@ public class WeatherActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
+
     }
 
 
@@ -140,7 +147,7 @@ public class WeatherActivity extends AppCompatActivity {
     public void requestWeather(final String weatherId){
         String weatherUrl="http://guolin.tech/api/weather?cityid="+
                 weatherId+"&key=395725f5c7a94ae5a2e76abe3bf32127";
-
+        pWeatherId=weatherId;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
