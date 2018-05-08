@@ -1,8 +1,10 @@
 package android.coolweather.com.coolweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.coolweather.com.coolweather.gson.Forecast;
 import android.coolweather.com.coolweather.gson.Weather;
+import android.coolweather.com.coolweather.service.AutoUpdateService;
 import android.coolweather.com.coolweather.util.HttpUtil;
 import android.coolweather.com.coolweather.util.LogUtil;
 import android.coolweather.com.coolweather.util.Utility;
@@ -224,6 +226,10 @@ public class WeatherActivity extends AppCompatActivity {
         carWashText.setText(carWash);
         sportText.setText(sport);
         weatherLayout.setVisibility(View.VISIBLE);
+        //选中某个城市并成功更新天气之后，AutoUpdateService就会一直在后台运行
+        //并保证每8小时更新一次天气。
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     //加载每日一图
